@@ -2,10 +2,8 @@ import { useContext } from "react";
 import { Redirect, Route } from "react-router-dom";
 import UserContext from "../context/UserContext";
 
-const AuthRoute = ({ component: Component, ...rest }) => {
+const RedirectAuthRoute = ({ component: Component, ...rest }) => {
   const { user } = useContext(UserContext);
-  // const isAuthenticated = true;
-  console.log(user);
 
   return (
     <Route
@@ -14,13 +12,13 @@ const AuthRoute = ({ component: Component, ...rest }) => {
         user.isAuthenticating ? (
           <></>
         ) : user.isAuthenticated ? (
-          <Component {...props} />
+          <Redirect to="/" />
         ) : (
-          <Redirect to="/login" />
+          <Component {...props} />
         )
       }
     />
   );
 };
 
-export default AuthRoute;
+export default RedirectAuthRoute;
