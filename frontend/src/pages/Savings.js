@@ -21,16 +21,39 @@ const colors = {
 const Savings = ({ accountId }) => {
   const firebase = useContext(FirebaseContext);
   const [transactions, setTransactions] = useState([]);
+  const [pieData, setPieData] = useState([]);
 
   const fetchTransactions = useCallback(async () => {
     const result = await firebase.fetchTransactions(accountId);
-    console.log('RESULT', result);
     setTransactions(result);
   }, [firebase, accountId]);
+
+  const parseTransactionData = useCallback(() => {
+    const transactionCategory = {};
+    const totalTransactions = [];
+    transactions.forEach((transaction) =>
+      transactionCategory[transaction.category]
+        ? (transactionCategory[transaction.category] += transaction.amount)
+        : (transactionCategory[transaction.category] = transaction.amount)
+    );
+
+    for (const property in transactionCategory) {
+      totalTransactions.push({
+        title: property,
+        value: transactionCategory[property],
+        color: colors[property],
+      });
+    }
+    setPieData(totalTransactions);
+  }, [transactions]);
 
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
+
+  useEffect(() => {
+    parseTransactionData();
+  }, [parseTransactionData])
 
   return (
     <>
@@ -52,16 +75,7 @@ const Savings = ({ accountId }) => {
         </Flex>
         <Flex justify="center" align="center" my={2} w="80%" mx="auto">
           <PieChart
-            data={[
-              { title: "Housing", value: 30, color: colors["Housing"] },
-              {
-                title: "Transportation",
-                value: 10,
-                color: colors["Transportation"],
-              },
-              { title: "Food", value: 15, color: colors["Food"] },
-              { title: "Utilities", value: 15, color: colors["Utilities"] },
-            ]}
+            data={pieData}
             label={({ dataEntry }) =>
               `${dataEntry.title} (${dataEntry.percentage.toFixed(1)})`
             }
