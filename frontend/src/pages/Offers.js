@@ -11,7 +11,7 @@ const Offers = () => {
         </Box>
         <Heading>Offers</Heading>
       </Flex>
-      <VStack>
+      <VStack align="stretch" spacing={4}>
         <OfferCard
           vendorName="Instacart"
           source="https://pbs.twimg.com/profile_images/1326362477341282304/_-mW6X_x_400x400.jpg"

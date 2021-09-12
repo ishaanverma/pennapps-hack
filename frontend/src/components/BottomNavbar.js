@@ -32,7 +32,7 @@ const BottomNavbar = () => {
         </Link>
       </Box>
       <Box>
-        <Link as={RouterLink} to="/history">
+        <Link as={RouterLink} to="/savings">
           <Flex justify="center" align="center" direction="column">
             <FontAwesomeIcon icon={["fas", "donate"]} />
             <Text>Savings</Text>

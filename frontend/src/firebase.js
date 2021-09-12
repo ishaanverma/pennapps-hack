@@ -79,6 +79,29 @@ class Firebase {
   signOut = () => {
     return signOut(this.auth);
   };
+
+  fetchTransactions = async (accountId) => {
+    console.log('ACCOUNT ID', accountId);
+    const transactionsRef = collection(this.db, "transactions");
+    const q = query(transactionsRef, where("accountId", "==", accountId));
+    const querySnapshot = await getDocs(q);
+    const result = []
+
+    querySnapshot.forEach((doc) => {
+      const document = doc.data();
+      result.push(document);
+    });
+
+    return result;
+  }
+
+  fetchAccount = async (userId) => {
+    const accountRef = collection(this.db, "accounts");
+    const q = query(accountRef, where("userID", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs[0].data();
+  }
 }
 
 export default Firebase;
