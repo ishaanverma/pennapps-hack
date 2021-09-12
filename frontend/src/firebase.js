@@ -13,6 +13,9 @@ import {
   getDocs,
   setDoc,
   doc,
+  addDoc,
+  orderBy,
+  updateDoc,
 } from "firebase/firestore";
 import FirebaseContext from "./context/FirebaseContext";
 
@@ -81,11 +84,14 @@ class Firebase {
   };
 
   fetchTransactions = async (accountId) => {
-    console.log('ACCOUNT ID', accountId);
     const transactionsRef = collection(this.db, "transactions");
-    const q = query(transactionsRef, where("accountId", "==", accountId));
+    const q = query(
+      transactionsRef,
+      where("accountId", "==", accountId),
+      orderBy("timestamp", "desc")
+    );
     const querySnapshot = await getDocs(q);
-    const result = []
+    const result = [];
 
     querySnapshot.forEach((doc) => {
       const document = doc.data();
@@ -93,7 +99,7 @@ class Firebase {
     });
 
     return result;
-  }
+  };
 
   fetchAccount = async (userId) => {
     const accountRef = collection(this.db, "accounts");
@@ -101,6 +107,29 @@ class Firebase {
     const querySnapshot = await getDocs(q);
 
     return querySnapshot.docs[0].data();
+  };
+
+  submitExpense = async (accountId, amount, category, merchant, saving, userId, savedThisMonth) => {
+    const amountNum = Number(amount);
+    const transactionRef = collection(this.db, "transactions");
+    await addDoc(transactionRef, {
+      accountId,
+      amountNum,
+      category,
+      merchant,
+      paymentChannel: "Cash",
+      timestamp: new Date(),
+      transactionType: "Debit",
+      transactionId: Math.random().toString(36).substr(2, 9),
+    });
+    const userRef = doc(this.db, "accounts", userId);
+    console.log(typeof savedThisMonth);
+    await updateDoc(userRef, { savedThisMonth: savedThisMonth + saving });
+  };
+
+  updateProfile = async (userId, ...settings) => {
+    const userRef = doc(this.db, "accounts", userId);
+    await updateDoc(userRef, ...settings);
   }
 }
 
