@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/layout";
+import { Flex, Heading } from "@chakra-ui/layout";
 
 const Navbar = () => {
   return (
@@ -8,7 +8,7 @@ const Navbar = () => {
       p="4"
       zIndex={1}
     >
-      <Text size="md">FinHelp</Text>
+      <Heading size="lg">Cache</Heading>
     </Flex>
   );
 };

@@ -4,7 +4,6 @@ import UserContext from "../context/UserContext";
 
 const AuthRoute = ({ component: Component, ...rest }) => {
   const { user } = useContext(UserContext);
-  // const isAuthenticated = true;
   console.log(user);
 
   return (

@@ -38,6 +38,11 @@ const Home = () => {
         </Flex>
       </Flex>
       <Flex px={4} my={4} w="100%">
+        <Button flex={1} bg="teal">
+          Add An Expense
+        </Button>
+      </Flex>
+      <Flex px={4} my={4} w="100%">
         <Button flex={1}>Setup a Goal</Button>
       </Flex>
       <Flex align="start" p={4} direction="column">
@@ -51,7 +56,7 @@ const Home = () => {
           <Text color="black">52 Week Challenge</Text>
         </Box>
         <Box bg="gray.100" h={20} w="100%" borderRadius={4} p={4} mb={4}>
-          <Text color="black">Put a aside money when you get paid</Text>
+          <Text color="black">Put aside money when you get paid</Text>
         </Box>
       </Flex>
       <Flex align="start" p={4} direction="column">

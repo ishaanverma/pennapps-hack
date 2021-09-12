@@ -11,8 +11,14 @@ const Login = () => {
   const firebase = useContext(FirebaseContext);
   const formBackground = useColorModeValue("gray.100", "gray.700");
 
-  const loginWithGoogle = () => {
-    firebase.signInWithGoogle();
+  const loginWithGoogle = async () => {
+    try {
+      // Authenticate with Google
+      await firebase.signInWithGoogle();
+    } catch (err) {
+      // Login Failed
+      console.log('Login Failed');
+    }
   };
 
   return (
