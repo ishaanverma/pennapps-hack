@@ -1,6 +1,17 @@
 import { useCallback } from "react";
 import { Container, Flex, Text, VStack, Box } from "@chakra-ui/layout";
 import { Progress } from "@chakra-ui/progress";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  ModalFooter,
+  Button,
+  Lorem,
+} from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import { PieChart } from "react-minimal-pie-chart";
@@ -22,6 +33,7 @@ const Savings = ({ accountId }) => {
   const firebase = useContext(FirebaseContext);
   const [transactions, setTransactions] = useState([]);
   const [pieData, setPieData] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const fetchTransactions = useCallback(async () => {
     const result = await firebase.fetchTransactions(accountId);
@@ -53,7 +65,13 @@ const Savings = ({ accountId }) => {
 
   useEffect(() => {
     parseTransactionData();
-  }, [parseTransactionData])
+  }, [parseTransactionData]);
+
+  useEffect(() => {
+    if (pieData.length > 0) {
+      setModalOpen(true);
+    }
+  }, [pieData]);
 
   return (
     <>
@@ -75,7 +93,7 @@ const Savings = ({ accountId }) => {
         </Flex>
         <Flex justify="center" align="center" my={2} w="80%" mx="auto">
           <PieChart
-            data={pieData}
+            data={pieData ? pieData : []}
             label={({ dataEntry }) =>
               `${dataEntry.title} (${dataEntry.percentage.toFixed(1)})`
             }
@@ -96,17 +114,45 @@ const Savings = ({ accountId }) => {
                   merchantName={transaction.merchant}
                   category={transaction.category}
                   amount={`$${transaction.amount}`}
+                  saved={transaction.saved ? transaction.saved : null}
                 />
               ))}
           </VStack>
         </Flex>
         <Box h={100} />
       </Container>
+      <Modal
+        isOpen={modalOpen}
+        size="xs"
+        onClose={() => setModalOpen(!modalOpen)}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Caution ⚠️</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>
+              It seems like your food expenditure is unusually high. Save more
+              by cooking at home!
+            </Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => setModalOpen(!modalOpen)}
+            >
+              Okay
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };
 
-const TransactionCard = ({ merchantName, category, amount }) => {
+const TransactionCard = ({ merchantName, category, amount, saved }) => {
   return (
     <Box bg="gray.500" p={4} rounded={4} w="100%">
       <Flex justify="space-between">
@@ -114,7 +160,10 @@ const TransactionCard = ({ merchantName, category, amount }) => {
           <Text color="white">{merchantName}</Text>
           <Text color="white">{category}</Text>
         </Flex>
-        <Text color="white">{amount}</Text>
+        <Flex direction="column" align="end">
+          <Text color="white">{amount}</Text>
+          {saved && <Text color="white">You Saved: ${saved}</Text>}
+        </Flex>
       </Flex>
     </Box>
   );

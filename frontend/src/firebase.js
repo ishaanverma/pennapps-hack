@@ -114,17 +114,17 @@ class Firebase {
     const transactionRef = collection(this.db, "transactions");
     await addDoc(transactionRef, {
       accountId,
-      amountNum,
+      amount: amountNum,
       category,
       merchant,
       paymentChannel: "Cash",
       timestamp: new Date(),
       transactionType: "Debit",
       transactionId: Math.random().toString(36).substr(2, 9),
+      saved: saving,
     });
     const userRef = doc(this.db, "accounts", userId);
-    console.log(typeof savedThisMonth);
-    await updateDoc(userRef, { savedThisMonth: savedThisMonth + saving });
+    await updateDoc(userRef, { savedThisMonth: Number((savedThisMonth + saving).toFixed(2)) });
   };
 
   updateProfile = async (userId, ...settings) => {

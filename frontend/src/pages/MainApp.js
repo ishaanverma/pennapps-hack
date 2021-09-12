@@ -26,7 +26,7 @@ const MainApp = () => {
   }, [fetchAccount]);
 
   return (
-    <AccountContext.Provider value={{ account }}>
+    <AccountContext.Provider value={{ account, setAccount }}>
       <BottomNavbar />
       <Switch>
         <Route path="/offers" exact>

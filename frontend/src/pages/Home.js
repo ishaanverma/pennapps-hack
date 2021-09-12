@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import {
   Flex,
@@ -25,17 +25,20 @@ import { FirebaseContext } from "../firebase";
 import UserContext from "../context/UserContext";
 
 const Home = () => {
-  const { account } = useContext(AccountContext);
+  const { account, setAccount } = useContext(AccountContext);
   const { user } = useContext(UserContext);
   const firebase = useContext(FirebaseContext);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [expenseAmount, setExpenseAmount] = useState(0);
   const [expenseType, setExpenseType] = useState("");
   const [expenseName, setExpenseName] = useState("");
-  const [roundExpenses, setRoundExpenses] = useState(
-    account && account.roundExpenses
-  );
+  const [roundExpenses, setRoundExpenses] = useState();
   console.log(account);
+
+  const fetchAccount = async () => {
+    const result = await firebase.fetchAccount(user.user.uid);
+    setAccount(result);
+  };
 
   const submitExpense = async () => {
     try {
@@ -45,10 +48,11 @@ const Home = () => {
         expenseAmount,
         expenseType,
         expenseName,
-        Number((higher - expenseAmount).toFixed(2)),
+        parseFloat((higher - expenseAmount).toFixed(2)),
         user.user.uid,
         Number(account.savedThisMonth),
       );
+      await fetchAccount();
       setIsExpenseModalOpen(false);
     } catch (err) {
       console.log(err);
@@ -91,7 +95,7 @@ const Home = () => {
         <Flex direction="column" justify="center" align="center">
           <Text>
             {account && Object.keys(account) !== 0
-              ? account.savedThisMonth
+              ? account.savedThisMonth.toFixed(2)
               : "-"}
           </Text>
           <Flex justify="center" align="center">
@@ -125,8 +129,9 @@ const Home = () => {
               id="round-expenses"
               colorScheme="teal"
               borderColor="black"
-              isChecked={roundExpenses}
+              checked={roundExpenses}
               onChange={async (event) => {
+                console.log(event.target.checked)
                 await firebase.updateProfile(user.user.uid, {
                   roundExpenses: event.target.checked,
                 });
